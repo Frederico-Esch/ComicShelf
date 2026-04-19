@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="ComicShelfUI.UserControls.CollectionCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComicShelfUI.UserControls"
+             xmlns:domain="clr-namespace:Domain;assembly=Domain"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             Loaded="CollectionCard_Loaded"
+             d:DesignHeight="150" d:DesignWidth="800" d:DataContext="{x:Type domain:Collection}">
+    <UserControl.Resources>
+        <BitmapImage x:Key="GenericCover" UriSource="..\Resources\GenericComicBookCover.jpg"></BitmapImage>
+        <SolidColorBrush x:Key="CardBackground" Color="#0Affffff"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+    </UserControl.Resources>
+    <Border x:Name="CardBorder" Background="{StaticResource CardBackground}" BorderBrush="SlateGray" BorderThickness="1" CornerRadius="7" Height="150px" d:DataContext="{d:DesignInstance domain:Collection}">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="Cover" Grid.Column="0" d:Source="{StaticResource GenericCover}" Source="{StaticResource GenericCover}">
+                <Image.RenderTransform>
+                    <ScaleTransform x:Name="Scale" CenterX="50" CenterY="50" ScaleX="1" ScaleY="1"/>
+                </Image.RenderTransform>
+            </Image>
+            <TextBlock Grid.Column="1" d:Text="NAME COMIC SAMPLE" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Foreground="{StaticResource FontColor}"/>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Foreground="Lime" HorizontalAlignment="Center">Own</TextBlock>
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" x:Name="OwnCount" Foreground="{StaticResource FontColor}" HorizontalAlignment="Center" VerticalAlignment="Center">0</TextBlock>
+            </Grid>
+            <Grid Grid.Column="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Foreground="Salmon" HorizontalAlignment="Center">Want</TextBlock>
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" x:Name="WantCount" Foreground="{StaticResource FontColor}" HorizontalAlignment="Center" VerticalAlignment="Center">0</TextBlock>
+            </Grid>
+        </Grid>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#1AFFFFFF" Duration="0:0:0.08" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#0AFFFFFF" Duration="0:0:0.08" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseDown" SourceName="CardBorder" x:Name="MouseDownStoryBoard">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#2AFFFFFF" Duration="0:0:0.01" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseUp" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#1AFFFFFF" Duration="0:0:0.01" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
+    </Border>
+</UserControl>

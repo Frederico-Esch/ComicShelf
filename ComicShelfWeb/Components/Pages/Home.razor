@@ -1,0 +1,105 @@
+﻿@page "/"
+@using Domain
+@using Microsoft.EntityFrameworkCore
+@using Repositories
+@inject DataContext DataContext
+
+<style>
+    .page-header {
+        input {
+            width: 100%;
+        }
+        margin: 10px 5px;
+    }
+    
+    .Card {
+        background: #FFFFFF0A;
+        border: 1px solid #000;
+        border-radius: 15px;
+        padding: 10px;
+        
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    
+    .Card:hover {
+        img {
+            transform: scale(0.8);
+            transition: all 0.1s ease-in-out;
+        }
+        background: #FFFFFF1A;
+        transition: background-color 0.1s ease-in-out;
+    }
+    
+    .Card:active {
+        img {
+            transform: scale(1);
+            transition: all 0.0s ease-in-out;
+        }
+        background: #FFFFFF2A;
+        transition: background-color 0.0s ease-in-out;
+    }
+    
+    img {
+        max-width: 150px;
+        flex: 1;
+        border-radius: 5px 5px 5px 5px;
+    }
+    
+    @@media all and (max-width: 600px) {
+        .Card {
+            background: #FFFFFF0A;
+            border: 1px solid #000;
+            border-radius: 15px;
+            padding: 10px;
+            
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <input type="text"/>
+</div>
+
+@foreach(var (collection, i) in Collections.Zip([0..Collections.Count]))
+{
+    <div class="Card" >
+        @if (collection.Cover != null)
+        {
+            <image class="user-select-none" src="data:image;base64, @Convert.ToBase64String(collection.Cover)"/>
+        }
+        <h1 class="text-white user-select-none" style="flex: 5; text-align: center">@collection.Name</h1>
+        <div style="flex: 1; display: flex; flex-direction: row; flex-wrap: wrap;">
+            @foreach (var tag in collection.Tags)
+            {
+                <p class="user-select-none" style="margin: 5px; color: white;">@tag</p>
+            }
+        </div>
+    </div>
+}
+
+@code
+{
+    private (int, int, int) BackgroundColor = (33, 37, 41);
+    private List<Collection> Collections = [];
+    
+    protected override void OnInitialized()
+    {
+        Collections = DataContext.Collections.AsNoTracking().ToList();
+        base.OnInitialized();
+    }
+
+    [JSInvokable]
+    public static void ChangeName(List<Collection> collections)
+    {
+        collections[0].Name = "Outra coisa";
+    }
+}
