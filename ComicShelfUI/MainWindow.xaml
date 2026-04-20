@@ -78,6 +78,7 @@
                 dd:DragDrop.IsDropTarget="{Binding Path=DragAndDrop, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 dd:DragDrop.DropTargetAdornerBrush="{StaticResource PrimaryColor}"
                 dd:DragDrop.DropHandler="{Binding Path=DropHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                dd:DragDrop.DragHandler="{Binding Path=DragHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 d:ItemsSource="{d:SampleData ItemCount=2}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">

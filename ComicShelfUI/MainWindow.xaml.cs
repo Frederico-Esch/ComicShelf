@@ -20,14 +20,14 @@ namespace ComicShelfUI;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     private IServiceProvider serviceProvider;
     private CollectionRepository collectionRepository;
     private ObservableFilteredCollection<Collection, string[]> collections;
-    private DropHandlerForCollectionList<ObservableFilteredCollection<Collection, string[]>> dropHandler = new();
-    private bool dragAndDrop = true;
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private bool dragAndDrop = true;
     public bool DragAndDrop {
         get => dragAndDrop;
         set {
@@ -35,6 +35,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    private DropHandlerForCollectionList<ObservableFilteredCollection<Collection, string[]>> dropHandler = new();
     public DropHandlerForCollectionList<ObservableFilteredCollection<Collection, string[]>> DropHandler {
         get => dropHandler;
         set {
@@ -43,6 +45,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    private CustomDragHandler<Collection, ObservableFilteredCollection<Collection, string[]>>  dragHandler = new();
+    public CustomDragHandler<Collection, ObservableFilteredCollection<Collection, string[]>> DragHandler {
+        get => dragHandler;
+        set {
+            dragHandler = value;
+            OnPropertyChanged();
+        }
+    }
     public MainWindow(IServiceProvider _serviceProvider, CollectionRepository _collectionRepository)
     {
         serviceProvider = _serviceProvider;
@@ -55,6 +65,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     .Tags.Any(tag => tag.Contains(t, StringComparison.InvariantCultureIgnoreCase))
             );
         });
+
+        dropHandler.OnReorder += (previousIndex, newIndex) =>
+        {
+            previousIndex += 1; newIndex += 1;
+            var min = Math.Min(previousIndex, newIndex);
+            var max = Math.Max(previousIndex, newIndex);
+            foreach (var (c, i) in collections.AsEnumerable().Where(c => c.Order >= min && c.Order <= max).Zip(Enumerable.Range(0, max-min+1)))
+            {
+                c.Order = min + i;
+            }
+
+            collectionRepository.Save();
+        };
 
         InitializeComponent();
         CollectionList.ItemsSource = collections; 
@@ -71,12 +94,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (terms.Length == 0) {
             DragAndDrop = true;
-            //collections.ClearFilter();
+            collections.ClearFilter();
         }
         else
         {
             DragAndDrop = false;
-            //collections.Filter(terms);
+            collections.Filter(terms);
             GC.Collect();
         }
     }

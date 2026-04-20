@@ -41,8 +41,12 @@ internal class DataContext : DbContext
                         v => string.Join(";", v),
                         v => convertTagsToHasSet(v)
                     );
+
                 entity.Property(c => c.Cover)
                     .HasColumnName("Cover");
+
+                entity.Property(c => c.Order)
+                    .HasColumnName("Order");
             });
 
             modelBuilder.Entity<Volume>(entity =>

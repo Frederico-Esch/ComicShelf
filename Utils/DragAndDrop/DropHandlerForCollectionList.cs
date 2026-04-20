@@ -15,27 +15,22 @@ namespace Utils.DragAndDrop
     public class DropHandlerForCollectionList <T> : IDropTarget
         where T : class, IRearrangeableCollection<Collection>
     {
-        private Collection? hovering;
+        public delegate void Reordered(int previousIndex, int newIndex);
+        public event Reordered? OnReorder;
 
         public void DragOver(IDropInfo dropInfo)
         {
             dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
             dropInfo.Effects = System.Windows.DragDropEffects.Copy;
-            var collections = (dropInfo.VisualTarget as ItemsControl)?.ItemsSource as T;
-            var index = dropInfo.DragInfo.SourceIndex;
-            if (dropInfo.Data is Collection collection && collection.Id == collections?.At(index)?.Id)
-            {
-                hovering = collection;
-                collections?.RemoveAt(index);
-            }
         }
 
         public void Drop(IDropInfo dropInfo)
         {
             if (dropInfo.VisualTarget is ItemsControl { ItemsSource: T collections })
             {
-                if (hovering is { } collection)
+                if (dropInfo.Data is Collection collection)
                     collections.InsertAt(dropInfo.InsertIndex, collection);
+                OnReorder?.Invoke(dropInfo.DragInfo.SourceIndex, dropInfo.InsertIndex);
             }
         }
     }

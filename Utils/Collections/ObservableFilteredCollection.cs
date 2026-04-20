@@ -44,6 +44,7 @@ public class ObservableFilteredCollection<T, U> : INotifyCollectionChanged, IEnu
     public void ClearFilter()
     {
         filtered = items.AsReadOnly();
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
 
     public void RemoveAt(int index)

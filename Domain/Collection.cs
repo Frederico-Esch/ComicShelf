@@ -8,6 +8,7 @@ public record Collection
     public string Name { get; set; } = string.Empty;
     public HashSet<string> Tags { get; set; } = [];
     public byte[]? Cover { get; set; } = [];
+    public int Order { get; set; } = 1;
     public virtual ICollection<Volume> Volumes { get; set; } = [];
 
     public Collection() { }
@@ -17,5 +18,6 @@ public record Collection
         Name = name;
         Tags = tags;
         Cover = cover;
+        Order = 1;
     }
 }
