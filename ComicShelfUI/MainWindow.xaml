@@ -8,8 +8,8 @@
         xmlns:domain="clr-namespace:Domain;assembly=Domain"
         xmlns:userControls="clr-namespace:ComicShelfUI.UserControls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        xmlns:dd="urn:gong-wpf-dragdrop" >
+        Title="Comic Shelf" Height="500" Width="800"
+        xmlns:dd="urn:gong-wpf-dragdrop" Icon="/Resources/icon.png" >
     
     <Window.Resources>
         
@@ -61,8 +61,8 @@
                     <ColumnDefinition Width="15*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="Search" Grid.Column="0" Margin="3 2" KeyDown="Search_KeyPressed" AcceptsReturn="False" FontSize="15"/>
-                <Button Name="ReloadButton" Grid.Column="1" Click="ReloadButton_Click" Style="{StaticResource ButtonStyle}">
+                <TextBox x:Name="Search" Grid.Column="0" Margin="3 2" KeyDown="SearchKeyPressed" AcceptsReturn="False" FontSize="15"/>
+                <Button Name="ReloadButton" Grid.Column="1" Click="ReloadClick" Style="{StaticResource ButtonStyle}">
                     <icons:PackIconMaterial Kind="Reload"/>
                 </Button>
             </Grid>
@@ -71,59 +71,53 @@
             <!--     Cover 
                       Name 
                 Own {} | Wants {} -->
-            <ListBox x:Name="CollectionList"
-                Margin="5 0" Background="#0FFF" BorderThickness="0"
-                HorizontalContentAlignment="Stretch"
-                dd:DragDrop.IsDragSource="{Binding Path=DragAndDrop, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                dd:DragDrop.IsDropTarget="{Binding Path=DragAndDrop, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                dd:DragDrop.DropTargetAdornerBrush="{StaticResource PrimaryColor}"
-                dd:DragDrop.DropHandler="{Binding Path=DropHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                dd:DragDrop.DragHandler="{Binding Path=DragHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                d:ItemsSource="{d:SampleData ItemCount=2}">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type domain:Collection}">
-                        <userControls:CollectionCard Cursor="Hand" Margin="0 2 5 2">
-                            <userControls:CollectionCard.ContextMenu>
-                                <ContextMenu>
-                                    <ContextMenu.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Background="Transparent"/>
-                                        </ItemsPanelTemplate>
-                                    </ContextMenu.ItemsPanel>
-                                    <ContextMenu.Template>
-                                        <ControlTemplate>
-                                            <Border CornerRadius="5" BorderBrush="SlateGray" BorderThickness="1" Background="{StaticResource BackgroundColor}">
-                                                <Border CornerRadius="5" Padding="5" Background="#1AFFFFFF">
-                                                    <ItemsPresenter/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="CollectionList"
+                    Margin="5 0" Background="#0FFF" BorderThickness="0"
+                    dd:DragDrop.IsDragSource="{Binding Path=DragAndDrop, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                    dd:DragDrop.IsDropTarget="{Binding Path=DragAndDrop, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                    dd:DragDrop.DropTargetAdornerBrush="{StaticResource PrimaryColor}"
+                    dd:DragDrop.DropHandler="{Binding Path=DropHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                    dd:DragDrop.DragHandler="{Binding Path=DragHandler, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                    d:ItemsSource="{d:SampleData ItemCount=2}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type domain:Collection}">
+                            <userControls:CollectionVCard Cursor="Hand" Margin="2 2" MaxWidth="200" BorderColor="Transparent" MouseUp="ComicClick">
+                                <userControls:CollectionVCard.ContextMenu>
+                                    <ContextMenu>
+                                        <ContextMenu.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Background="Transparent"/>
+                                            </ItemsPanelTemplate>
+                                        </ContextMenu.ItemsPanel>
+                                        <ContextMenu.Template>
+                                            <ControlTemplate>
+                                                <Border CornerRadius="5" BorderBrush="SlateGray" BorderThickness="1" Background="{StaticResource BackgroundColor}">
+                                                    <Border CornerRadius="5" Padding="5" Background="#1AFFFFFF">
+                                                        <ItemsPresenter/>
+                                                    </Border>
                                                 </Border>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </ContextMenu.Template>
-                                    <MenuItem Header="Open" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}"/>
-                                    <MenuItem Header="Edit" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="Edit_Click"/>
-                                    <MenuItem Header="Delete" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="Delete_Click"/>
-                                </ContextMenu>
-                            </userControls:CollectionCard.ContextMenu>
-                        </userControls:CollectionCard>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                            </ControlTemplate>
+                                        </ContextMenu.Template>
+                                        <MenuItem Header="Open" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="ContextOpenComic"/>
+                                        <MenuItem Header="Edit" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="ContextEdit"/>
+                                        <MenuItem Header="Delete" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="ContextDelete"/>
+                                    </ContextMenu>
+                                </userControls:CollectionVCard.ContextMenu>
+                            </userControls:CollectionVCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </DockPanel>
         <StackPanel x:Name="BottomButtons"
             Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20">
-            <Button Margin="2 5" Padding="8" Style="{StaticResource ButtonStyle}" Click="AddCollection_Click">
+            <Button Margin="2 5" Padding="8" Style="{StaticResource ButtonStyle}" Click="AddCollection">
                 <icons:PackIconMaterial Kind="Plus"/>
             </Button>
             <!--
@@ -133,37 +127,4 @@
             -->
         </StackPanel>
     </Grid>
-<!--
-<ScrollViewer x:Name="CollectionScrollView" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="5 0">
-    <ItemsControl Name="CollectionList" d:ItemsSource="{d:SampleData ItemCount=2}">
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type domain:Collection}">
-                <userControls:CollectionCard Cursor="Hand" Margin="0 0 0 5">
-                    <userControls:CollectionCard.ContextMenu>
-                        <ContextMenu>
-                            <ContextMenu.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Background="Transparent"/>
-                                </ItemsPanelTemplate>
-                            </ContextMenu.ItemsPanel>
-                            <ContextMenu.Template>
-                                <ControlTemplate>
-                                    <Border CornerRadius="5" BorderBrush="SlateGray" BorderThickness="1" Background="{StaticResource BackgroundColor}">
-                                        <Border CornerRadius="5" Padding="5" Background="#1AFFFFFF">
-                                            <ItemsPresenter/>
-                                        </Border>
-                                    </Border>
-                                </ControlTemplate>
-                            </ContextMenu.Template>
-                            <MenuItem Header="Open" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}"/>
-                            <MenuItem Header="Edit" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="Edit_Click"/>
-                            <MenuItem Header="Delete" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="Delete_Click"/>
-                        </ContextMenu>
-                    </userControls:CollectionCard.ContextMenu>
-                </userControls:CollectionCard>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
-</ScrollViewer>
--->
 </Window> 

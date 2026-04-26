@@ -9,10 +9,10 @@ namespace Repositories
 {
     public static class RepositoryServices
     {
-        public static void ConfigureRepositories(this ServiceCollection services)
+        public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddDbContext<DataContext>();
-            services.AddScoped<CollectionRepository>();
+            services.AddScoped<ICollectionRepository, CollectionRepository>();
         }
     }
 }

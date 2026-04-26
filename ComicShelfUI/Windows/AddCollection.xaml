@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:ComicShelfUI.Windows"
         xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="AddCollection" Height="450" Width="800" 
-        Background="{StaticResource BackgroundColor}">
+        Title="New Collection" Height="450" Width="800" 
+        Background="{StaticResource BackgroundColor}" Icon="/Resources/icon.png" KeyDown="KeyDownWindow" Closing="OnClosing">
     <Window.Resources >
         <BitmapImage x:Key="GenericCover" UriSource="/Resources/GenericComicBookCover.jpg" />
         <ControlTemplate x:Key="CircularButton" TargetType="Button">
@@ -63,7 +63,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="CoverButton" Grid.Column="0" Source="{StaticResource GenericCover}" Cursor="Hand" MouseDown="CoverButton_MouseDown"/>
+        <Image x:Name="CoverButton" Grid.Column="0" Source="{StaticResource GenericCover}" Cursor="Hand" MouseDown="ChangeCover"/>
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -87,7 +87,7 @@
                 Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource FontColor}" FontSize="15" Background="#0AFFFFFF" BorderBrush="DarkGray"
-                KeyDown="TextBox_KeyDown"
+                KeyDown="TextBoxKeyDown"
             />
             <Label
                 Grid.Row="1" Grid.Column="0"
@@ -99,12 +99,12 @@
                 Grid.Row="1" Grid.Column="1"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource FontColor}" FontSize="15" Background="#0AFFFFFF" BorderBrush="DarkGray"
-                KeyDown="TextBox_KeyDown"
+                KeyDown="TextBoxKeyDown"
             />
             <Button
                 Grid.Row="1" Grid.Column="2"
                 Style="{StaticResource AcceptButton}" Template="{StaticResource CircularButton}"
-                Click="AddTag_Click"
+                Click="AddTag"
                 Width="27" Height="25" Margin="3 0 0 0">
                 <icons:Material Kind="Plus" Width="15" Height="15"/>
             </Button>
@@ -113,7 +113,7 @@
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 Foreground="{StaticResource FontColor}" FontSize="15" Background="#0AFFFFFF" BorderBrush="DarkGray"
                 Margin="10 10 0 10"
-                SelectionChanged="TagList_SelectionChanged">
+                SelectionChanged="DeleteTag">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -126,13 +126,13 @@
                 <Button
                     Style="{StaticResource AcceptButton}" Template="{StaticResource SquareButton}"
                     Padding="5" Margin="0 0 5 0"
-                    Click="SaveButton_Click">
+                    Click="Save">
                     <icons:Material Kind="ContentSave"/>
                 </Button>
                 <Button x:Name="DeleteCollectionButton"
                         Style="{StaticResource RejectButton}" Template="{StaticResource SquareButton}"
                         Padding="5" Margin="5 0 0 0"
-                        Click="Delete_Button">
+                        Click="Delete">
                     <icons:Material Kind="TrashCan"/>
                 </Button>
             </StackPanel>

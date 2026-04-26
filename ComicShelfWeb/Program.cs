@@ -13,7 +13,7 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddDbContext<DataContext>();
+        builder.Services.ConfigureRepositories();
 
         var app = builder.Build();
 

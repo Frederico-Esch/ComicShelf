@@ -3,10 +3,121 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:domain="clr-namespace:Domain;assembly=Domain"
+        xmlns:userControl="clr-namespace:ComicShelfUI.UserControls"
         xmlns:local="clr-namespace:ComicShelfUI.Windows"
+        xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="InspectCollection" Height="450" Width="800">
+        Title="Comic" MinHeight="500" Height="500" MinWidth="800" Width="800" Icon="/Resources/icon.png"
+        Loaded="WindowLoaded" KeyDown="KeyDownWindow">
+    <Window.DataContext>
+        <domain:Collection/>
+    </Window.DataContext>
+    <Window.Resources>
+        <SolidColorBrush x:Key="PrimaryColor" Color="#BB86FC"/>
+        <SolidColorBrush x:Key="SecondaryColor" Color="#3700B3"/>
+
+        <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
+            <Border
+                CornerRadius="5"
+                Background="{TemplateBinding Background}"
+                Padding="{TemplateBinding Padding}"
+                Margin="{TemplateBinding Margin}"
+                Cursor="Hand">
+                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+        </ControlTemplate>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SecondaryColor}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="AcceptButton" BasedOn="{StaticResource ButtonStyle}" TargetType="Button">
+            <Setter Property="Background" Value="PaleGreen"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Lime"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="PaleGreen"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="MenuItemTemplate" TargetType="MenuItem">
+            <Border x:Name="templateRoot" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true" Padding="5" CornerRadius="5">
+                <ContentPresenter ContentSource="Header" Grid.Column="1" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="{StaticResource BackgroundColor}" TargetName="templateRoot"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryColor}" TargetName="templateRoot"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+
     <Grid>
-        
+        <DockPanel>
+            <Grid Background="{StaticResource BackgroundColor}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <userControl:CollectionVCard x:Name="Card" Grid.Column="0" HasAnimation="False" BorderThickness="0" FontSize="20"/>
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="VolumesList"
+                              Background="Transparent"
+                              d:ItemsSource="{d:SampleData ItemCount=2}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="domain:Volume">
+                                <userControl:VolumeCard OnUpdateCard="OnUpdateCard">
+                                    <userControl:VolumeCard.ContextMenu>
+                                        <ContextMenu>
+                                            <ContextMenu.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Background="Transparent"/>
+                                                </ItemsPanelTemplate>
+                                            </ContextMenu.ItemsPanel>
+                                            <ContextMenu.Template>
+                                                <ControlTemplate>
+                                                    <Border CornerRadius="5" BorderBrush="SlateGray" BorderThickness="1" Background="{StaticResource BackgroundColor}">
+                                                        <Border CornerRadius="5" Padding="5" Background="#1AFFFFFF">
+                                                            <ItemsPresenter/>
+                                                        </Border>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </ContextMenu.Template>
+                                            <MenuItem Header="Edit" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="EditVolume"/>
+                                            <MenuItem Header="Delete" Foreground="{StaticResource FontColor}" Template="{StaticResource MenuItemTemplate}" Click="DeleteVolume"/>
+                                        </ContextMenu>
+                                    </userControl:VolumeCard.ContextMenu>
+                                </userControl:VolumeCard>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20">
+            <Button Margin="5 0" Style="{StaticResource ButtonStyle}" Click="AddVolume">
+                <icons:Material Kind="Plus"/>
+            </Button>
+            <Button Margin="5 0" Style="{StaticResource AcceptButton}" Click="SaveRequest">
+                <icons:Material Kind="ContentSave"/>
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

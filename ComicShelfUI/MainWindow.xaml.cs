@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using ComicShelfUI.UserControls;
 using ComicShelfUI.Windows;
 using Domain;
 using GongSolutions.Wpf.DragDrop;
@@ -24,7 +25,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     protected void OnPropertyChanged([CallerMemberName] string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     private IServiceProvider serviceProvider;
-    private CollectionRepository collectionRepository;
+    private ICollectionRepository collectionRepository;
     private ObservableFilteredCollection<Collection, string[]> collections;
 
     private bool dragAndDrop = true;
@@ -36,6 +37,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    #region Properties
     private DropHandlerForCollectionList<ObservableFilteredCollection<Collection, string[]>> dropHandler = new();
     public DropHandlerForCollectionList<ObservableFilteredCollection<Collection, string[]>> DropHandler {
         get => dropHandler;
@@ -53,10 +55,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    public MainWindow(IServiceProvider _serviceProvider, CollectionRepository _collectionRepository)
+    #endregion
+
+    public MainWindow(IServiceProvider _serviceProvider, ICollectionRepository _collectionRepository)
     {
         serviceProvider = _serviceProvider;
         collectionRepository = _collectionRepository;
+        collectionRepository.EnsureDbExists();
         collections = new((collection, terms) => {
             return terms.Any(t =>
                    collection
@@ -87,6 +92,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private void ReloadCollections()
     {
         collections.ResetCollections(collectionRepository.GetAllCollections());
+        CollectionList.InvalidateVisual();
+        GC.Collect();
         Search.Text = "";
     }
 
@@ -104,14 +111,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    #region Events
+    private void OpenComic(Collection collection)
+    {
+        var inspectCollection = serviceProvider.GetRequiredService<InspectCollection>();
+        inspectCollection.DataContext = collection;
+        inspectCollection.ShowDialog();
 
-    private void ReloadButton_Click(object sender, RoutedEventArgs e)
+        ReloadCollections();
+    }
+
+    #region Events
+    private void ReloadClick(object sender, RoutedEventArgs e)
     {
         ReloadCollections();
     }
 
-    private void AddCollection_Click(object sender, RoutedEventArgs e)
+    private void AddCollection(object sender, RoutedEventArgs e)
     {
         if(serviceProvider.GetRequiredService<AddCollection>().ShowDialog() ?? false)
         {
@@ -119,7 +134,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private void Search_KeyPressed(object sender, System.Windows.Input.KeyEventArgs e)
+    private void SearchKeyPressed(object sender, System.Windows.Input.KeyEventArgs e)
     {
         if (e.Key == System.Windows.Input.Key.Return)
         {
@@ -134,36 +149,48 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    private void ComicClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != System.Windows.Input.MouseButton.Left || sender is not CollectionVCard { DataContext: Collection collection })
+            return;
+        OpenComic(collection);
+    }
     #endregion
 
     #region Context Menu
-    private void Edit_Click(object sender, RoutedEventArgs e)
+    private void ContextEdit(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuItem menuItem && menuItem.DataContext is Collection collection)
-        {
-            var addCollection = serviceProvider.GetRequiredService<AddCollection>();
-            addCollection.CurrentCollection = collection;
-            addCollection.ShowDialog();
-            ReloadCollections();
-        }
+        if (sender is not MenuItem { DataContext: Collection collection })
+            return;
+
+        var addCollection = serviceProvider.GetRequiredService<AddCollection>();
+        addCollection.CurrentCollection = collection;
+        addCollection.ShowDialog();
+        ReloadCollections();
     }
 
-    private void Delete_Click(object sender, RoutedEventArgs e)
+    private void ContextDelete(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuItem menuItem && menuItem.DataContext is Collection collection)
-        {
-            //add an Active column in DB to not permanently remove maybe??
-            var result = MessageBox.Show(
-                $"Do you want to remove collection \"{collection.Name}\"?",
-                "Are you sure?",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning
-            );
-            if (result != MessageBoxResult.Yes) return;
-            collectionRepository.Remove(collection);
-            collectionRepository.Save();
-            ReloadCollections();
-        }
+        if (sender is not MenuItem { DataContext: Collection collection }) return;
+        //add an Active column in DB to not permanently remove maybe??
+        var result = MessageBox.Show(
+            $"Do you want to remove collection \"{collection.Name}\"?",
+            "Are you sure?",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning
+        );
+        if (result != MessageBoxResult.Yes) return;
+        collectionRepository.Remove(collection);
+        collectionRepository.Save();
+        ReloadCollections();
+    }
+
+    private void ContextOpenComic(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { DataContext: Collection collection })
+            return;
+
+        OpenComic(collection);
     }
     #endregion
 }

@@ -7,13 +7,25 @@ public static class Program
 {
     public static void Main()
     {
-        using var dbContext = new Repositories.DataContext();
+        var repository = new CollectionRepository();
+        var collections = repository.GetAllCollections();
 
-        if (dbContext.Collections.FirstOrDefault(c => c.Name == "Teste") is not { } collection)
+        if (collections.FirstOrDefault(c => c.Name.Contains("teste")) is not { } collection) return;
+
+        var lastVolume = 1;
+        for (var i = 0; i < 100; i++)
         {
-            Console.WriteLine("Failed to find Collection 'Teste'");
-            return;
+            if (i % 2 == 0)
+            {
+                repository.AddVolume(collection, new Volume() { IsOwned = false, Number = ++lastVolume });
+            }
+            else
+            {
+                repository.AddVolume(collection, new Volume() { IsOwned = false, SpecialEdition = $"Special Ed: {lastVolume}.5"});
+            }
         }
+        //repository.AddVolume(collection, new Volume() { IsOwned = false, Number = 1 });
 
+        repository.Save();
     }
 }

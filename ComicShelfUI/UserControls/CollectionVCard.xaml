@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="ComicShelfUI.UserControls.CollectionVCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComicShelfUI.UserControls"
+             xmlns:domain="clr-namespace:Domain;assembly=Domain"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             Loaded="CollectionVCard_Loaded"
+             d:DataContext="{x:Type domain:Collection}"
+             x:Name="CurrentWindow">
+    <UserControl.Resources>
+        <BitmapImage x:Key="GenericCover" UriSource="..\Resources\GenericComicBookCover.jpg"></BitmapImage>
+        <!--
+        <SolidColorBrush x:Key="CardBackground" Color="#0Affffff"/>
+        -->
+        <Style TargetType="TextBlock">
+            <!--
+            <Setter Property="FontSize" Value="15"/>
+            -->
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <!--
+            BorderBrush="{Binding BorderColor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+            {Binding BorderThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}
+    -->
+    <Border x:Name="CardBorder"
+            Background="#0AFFFFFF"
+            BorderBrush="{Binding BorderColor, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"
+            BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"
+            CornerRadius="7"
+            d:DataContext="{d:DesignInstance domain:Collection}"
+            MouseEnter="CancelAnimation"
+            MouseLeave="CancelAnimation"
+            MouseDown="CancelAnimation"
+            MouseUp="CancelAnimation">
+        <StackPanel
+            Margin="5" d:MaxWidth="150px" MaxWidth="{Binding MaxWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
+            <Image x:Name="Cover" Source="{StaticResource GenericCover}">
+                <Image.RenderTransform>
+                    <ScaleTransform x:Name="Scale" CenterX="50" CenterY="50" ScaleX="1" ScaleY="1"/>
+                </Image.RenderTransform>
+            </Image>
+            <TextBlock TextWrapping="Wrap" d:Text="EXAMPLE NAME WITH MULTIPLE LINES" Text="{Binding Name}" Margin="0 5" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Margin="5 0">
+                    <TextBlock Text="Own" Foreground="Lime" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>
+                    <TextBlock x:Name="OwnCount" Text="0" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>
+                </StackPanel>
+                <StackPanel Margin="5 0">
+                    <TextBlock Text="Want" Foreground="Salmon" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>
+                    <TextBlock x:Name="WantCount" Text="0" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#1AFFFFFF" Duration="0:0:0.08" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#0AFFFFFF" Duration="0:0:0.08" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.08" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseDown" SourceName="CardBorder" x:Name="MouseDownStoryBoard">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#2AFFFFFF" Duration="0:0:0.01" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="1" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseUp" SourceName="CardBorder">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation To="#1AFFFFFF" Duration="0:0:0.01" Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="Background.Color"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleX)"/>
+                        <DoubleAnimation To="0.9" Duration="0:0:0.01" Storyboard.TargetName="Scale" Storyboard.TargetProperty="(ScaleTransform.ScaleY)"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
+    </Border>
+</UserControl>

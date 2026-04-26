@@ -2,7 +2,7 @@
 @using Domain
 @using Microsoft.EntityFrameworkCore
 @using Repositories
-@inject DataContext DataContext
+@inject CollectionRepository CollectionRepository
 
 <style>
     .page-header {
@@ -69,7 +69,7 @@
     <input type="text"/>
 </div>
 
-@foreach(var (collection, i) in Collections.Zip([0..Collections.Count]))
+@foreach(var collection in Collections)
 {
     <div class="Card" >
         @if (collection.Cover != null)
@@ -90,16 +90,10 @@
 {
     private (int, int, int) BackgroundColor = (33, 37, 41);
     private List<Collection> Collections = [];
-    
+
     protected override void OnInitialized()
     {
-        Collections = DataContext.Collections.AsNoTracking().ToList();
+        Collections = CollectionRepository.GetAllCollections();
         base.OnInitialized();
-    }
-
-    [JSInvokable]
-    public static void ChangeName(List<Collection> collections)
-    {
-        collections[0].Name = "Outra coisa";
     }
 }

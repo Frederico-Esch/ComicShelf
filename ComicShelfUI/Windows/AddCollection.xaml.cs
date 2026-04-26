@@ -14,7 +14,7 @@ public partial class AddCollection : Window
     private ObservableHashSet<string> Tags { get; set; } = [];
     private byte[]? Cover { get; set; } = [];
     private BitmapImage? CoverImage { get; set; }
-    private CollectionRepository collectionRepository;
+    private ICollectionRepository collectionRepository;
     private Collection? currentCollection;
     public Collection? CurrentCollection {
         get => currentCollection;
@@ -38,11 +38,14 @@ public partial class AddCollection : Window
                     CoverButton.Source = CoverImage;
                 }
                 Tags.Replace(collection.Tags);
+                Title = $"Edit \"{collection.Name}\"";
             }
         }
     }
 
-    public AddCollection(CollectionRepository _collectionRepository)
+    private bool HasName => NameTextBox.Text.Trim() is string name && string.IsNullOrWhiteSpace(name);
+
+    public AddCollection(ICollectionRepository _collectionRepository)
     {
         collectionRepository = _collectionRepository;
 
@@ -51,7 +54,7 @@ public partial class AddCollection : Window
         CurrentCollection = null;
     }
 
-    private void AddTag_Click(object sender, RoutedEventArgs e)
+    private void AddTag(object sender, RoutedEventArgs e)
     {
         if (TagTextBox.Text.Trim() is { } newTag && newTag.Length > 0) {
             if(Tags.Add(newTag))
@@ -61,7 +64,7 @@ public partial class AddCollection : Window
         }
     }
 
-    private void TagList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    private void DeleteTag(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (TagList.SelectedIndex > -1)
         {
@@ -71,13 +74,13 @@ public partial class AddCollection : Window
         }
     }
 
-    private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    private void TextBoxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
         if (e.Key == System.Windows.Input.Key.Enter)
         {
             if(sender == TagTextBox)
             {
-                AddTag_Click(0, new RoutedEventArgs());
+                AddTag(0, new RoutedEventArgs());
             }
             else
             {
@@ -86,7 +89,7 @@ public partial class AddCollection : Window
         }
     }
 
-    private void CoverButton_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void ChangeCover(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
         if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
@@ -117,9 +120,9 @@ public partial class AddCollection : Window
         }
     }
 
-    private void SaveButton_Click(object sender, RoutedEventArgs e)
+    private void Save()
     {
-        if (NameTextBox.Text.Trim() is string name && name.Length > 0)
+        if (NameTextBox.Text.Trim() is string name && string.IsNullOrWhiteSpace(name))
         {
             if (currentCollection is { } collection)
             {
@@ -141,7 +144,9 @@ public partial class AddCollection : Window
         }
     }
 
-    private void Delete_Button(object sender, RoutedEventArgs e)
+    private void Save(object sender, RoutedEventArgs e) => Save();
+
+    private void Delete(object sender, RoutedEventArgs e)
     {
         if (currentCollection is { } collection)
         {
@@ -149,13 +154,34 @@ public partial class AddCollection : Window
                 $"Do you want to remove collection \"{collection.Name}\"?",
                 "Are you sure?",
                 MessageBoxButton.YesNo,
-                MessageBoxImage.Warning
+                MessageBoxImage.Question
             );
             if (result != MessageBoxResult.Yes) return;
             collectionRepository.Remove(collection);
             collectionRepository.Save();
             DialogResult = true;
             Close();
+        }
+    }
+
+    private void KeyDownWindow(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == System.Windows.Input.Key.Escape)
+        {
+            e.Handled = true;
+            Close();
+        }
+    }
+
+    private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        var askToSave = currentCollection is not null || (HasName || Tags.Set.Count > 0 || Cover != null);
+
+        if (askToSave && !(DialogResult ?? false))
+        {
+            var result = MessageBox.Show("Do you want to save the changes?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes) Save();
+            else collectionRepository.DiscardChanges();
         }
     }
 }
