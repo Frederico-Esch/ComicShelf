@@ -96,6 +96,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         GC.Collect();
         Search.Text = "";
         FilterCollections([]);
+        Search.ItemsSource = collections.SelectMany(c => c.Tags.Concat([c.Name])).ToHashSet();
     }
 
     private void FilterCollections(string[] terms)
@@ -148,6 +149,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 .ToArray();
             FilterCollections(terms);
         }
+        else Search.IsDropDownOpen = true;
     }
 
     private void ComicClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
