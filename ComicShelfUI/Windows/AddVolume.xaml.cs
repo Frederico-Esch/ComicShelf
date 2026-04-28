@@ -148,6 +148,17 @@ namespace ComicShelfUI.Windows
                 if (Save()) Close();
             }
         }
+
+        private void Delete(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not Volume volume || volume.Collection is not { } collection) return;
+            var result = MessageBox.Show("Are you sure you want to delete this volume?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+
+            collectionRepository.RemoveVolume(collection, volume);
+            collectionRepository.Save();
+            Close();
+        }
         #endregion
 
         #region Closing
@@ -167,27 +178,9 @@ namespace ComicShelfUI.Windows
                     return; //If it doesn't have changes just exit 
             }
 
-            var result = MessageBox.Show($"Do you wanna save the changes?", "Save Changes?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes) e.Cancel = !Save();
-            if (result == MessageBoxResult.No && volume.CollectionId != Guid.Empty) collectionRepository.DiscardChanges();
-        }
-
-        private void Delete(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is not Volume volume || volume.Collection is not { } collection) return;
-            var result = MessageBox.Show("Are you sure you want to delete this volume?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result != MessageBoxResult.Yes) return;
-
-            collectionRepository.RemoveVolume(collection, volume);
-            collectionRepository.Save();
-            Close();
-        }
-
-        private void Cancel(object sender, RoutedEventArgs e)
-        {
-            collectionRepository.DiscardChanges();
-            DataContext = null;
-            Close();
+            var result = MessageBox.Show($"Do you wanna save the changes?", "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (result == MessageBoxResult.No && collectionRepository.HasChanges()) collectionRepository.DiscardChanges();
+            e.Cancel = (result == MessageBoxResult.Cancel || (result == MessageBoxResult.Yes && !Save()));
         }
         #endregion
     }

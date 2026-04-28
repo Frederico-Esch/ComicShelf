@@ -122,7 +122,7 @@ public partial class AddCollection : Window
 
     private void Save()
     {
-        if (NameTextBox.Text.Trim() is string name && string.IsNullOrWhiteSpace(name))
+        if (NameTextBox.Text.Trim() is string name && !string.IsNullOrWhiteSpace(name))
         {
             if (currentCollection is { } collection)
             {
@@ -175,13 +175,15 @@ public partial class AddCollection : Window
 
     private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        var askToSave = currentCollection is not null || (HasName || Tags.Set.Count > 0 || Cover != null);
+        var askToSave = HasName || Tags.Count > 0 || (Cover?.Length ?? 0) > 0 || currentCollection is not null;
 
         if (askToSave && !(DialogResult ?? false))
         {
-            var result = MessageBox.Show("Do you want to save the changes?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes) Save();
-            else collectionRepository.DiscardChanges();
+            var result = MessageBox.Show("Do you want to exit without saving?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                collectionRepository.DiscardChanges();
+            else
+                e.Cancel = true;
         }
     }
 }

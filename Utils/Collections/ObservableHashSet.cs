@@ -8,6 +8,8 @@ public class ObservableHashSet<T> : INotifyCollectionChanged, IEnumerable<T>
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
     private List<T> positions { get; set; } = [];
     public HashSet<T> Set { get; private init;} = [];
+    public int Count => Set.Count;
+
 
     public ObservableHashSet() { }
 

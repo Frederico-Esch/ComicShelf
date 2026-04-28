@@ -25,21 +25,24 @@ namespace ComicShelfUI.Windows
             InitializeComponent();
         }
 
-        private void AskForSaving(string? msg = null)
+        private bool AskForSaving(string? msg = null)
         {
 
-            if (DataContext is not Collection { Name: string name }) return;
+            if (DataContext is not Collection { Name: string name }) return true;
             var defaultMsg = $"Do you wanna save the changes to \"{name}\"?";
 
             if (collectionRepository.HasChanges())
             {
-                var result = MessageBox.Show(msg ?? defaultMsg, "Save Changes?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show(msg ?? defaultMsg, "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Cancel) return false;
 
                 if (result == MessageBoxResult.Yes)
                     collectionRepository.Save();
                 else
                     collectionRepository.DiscardChanges();
+
             }
+            return true;
         }
 
         private void ReloadVolumes()
@@ -79,7 +82,7 @@ namespace ComicShelfUI.Windows
         {
             if (DataContext is not Collection collection) return;
 
-            AskForSaving("Save before Adding a new volume? (not saving means discarding changes)");
+            if (!AskForSaving("Save before Adding a new volume? (not saving means discarding changes)")) return;
             var window = serviceProvider.GetRequiredService<AddVolume>();
             window.Collection = collection;
             window.ShowDialog();
@@ -102,7 +105,7 @@ namespace ComicShelfUI.Windows
         {
             if (sender is not MenuItem { DataContext: Volume volume}) return;
 
-            AskForSaving("Save before Adding a new volume? (not saving means discarding changes)");
+            if (!AskForSaving("Save before Adding a new volume? (not saving means discarding changes)")) return;
             var window = serviceProvider.GetRequiredService<AddVolume>();
             window.Volume = volume;
             window.ShowDialog();
@@ -126,7 +129,7 @@ namespace ComicShelfUI.Windows
         #region Closing
         protected override void OnClosing(CancelEventArgs e)
         {
-            AskForSaving();
+            e.Cancel = !AskForSaving();
 
             base.OnClosing(e);
         }

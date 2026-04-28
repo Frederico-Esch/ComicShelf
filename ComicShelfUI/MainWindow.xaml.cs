@@ -95,6 +95,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         CollectionList.InvalidateVisual();
         GC.Collect();
         Search.Text = "";
+        FilterCollections([]);
     }
 
     private void FilterCollections(string[] terms)

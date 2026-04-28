@@ -108,9 +108,6 @@
             <Button Margin="5" Style="{StaticResource AcceptButton}" Click="Save">
                 <icons:Material Kind="ContentSave"/>
             </Button>
-            <Button Margin="5" Style="{StaticResource RejectButton}" Click="Cancel">
-                <icons:Material Kind="Cancel"/>
-            </Button>
         </StackPanel>
     </StackPanel>
 </Window>
