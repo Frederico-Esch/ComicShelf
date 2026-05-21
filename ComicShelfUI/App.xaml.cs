@@ -13,7 +13,7 @@ namespace ComicShelfUI
     /// </summary>
     public partial class App : Application
     {
-        private IServiceProvider serviceProvider;
+        private ServiceProvider? serviceProvider;
 
         protected override void OnStartup(StartupEventArgs e)
         {

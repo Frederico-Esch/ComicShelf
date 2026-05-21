@@ -144,7 +144,11 @@ public partial class AddCollection : Window
         }
     }
 
-    private void Save(object sender, RoutedEventArgs e) => Save();
+    private void Save(object sender, RoutedEventArgs e)
+    {
+        Save();
+        Close();
+    }
 
     private void Delete(object sender, RoutedEventArgs e)
     {

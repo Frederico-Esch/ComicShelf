@@ -89,10 +89,10 @@ internal class DataContext(IConfiguration configuration) : DbContext
                 .HasColumnName("Details");
 
             entity
-            .HasOne(v => v.Collection)
-            .WithMany(c => c.Volumes)
-            .HasForeignKey(v => v.CollectionId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(v => v.Collection)
+                .WithMany(c => c.Volumes)
+                .HasForeignKey(v => v.CollectionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

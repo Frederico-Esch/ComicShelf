@@ -90,7 +90,11 @@ namespace ComicShelfUI.Windows
             return true;
         }
 
-        private void Save(object sender, RoutedEventArgs e) => Save();
+        private void Save(object sender, RoutedEventArgs e)
+        {
+            Save();
+            Close();
+        }
 
         private bool InvalidText(string text) => text.Any(c => !char.IsNumber(c));
 

@@ -76,6 +76,7 @@ namespace ComicShelfUI.Windows
         private void SaveRequest(object sender, RoutedEventArgs e)
         {
             collectionRepository.Save();
+            Close();
         }
 
         private void AddVolume(object sender, RoutedEventArgs e)

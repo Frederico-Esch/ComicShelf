@@ -22,6 +22,7 @@
         </ControlTemplate>
         <ControlTemplate x:Key="SquareButton" TargetType="Button">
             <Border
+                CornerRadius="5"
                 Background="{TemplateBinding Background}"
                 Padding="{TemplateBinding Padding}"
                 Margin="{TemplateBinding Margin}"
@@ -44,8 +45,9 @@
             </Style.Triggers>
         </Style>
         <Style x:Key="RejectButton" TargetType="Button">
-            <Setter Property="Background" Value="PaleVioletRed"/>
             <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Background" Value="PaleVioletRed"/>
+            <Setter Property="Padding" Value="8"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="Red"/>
@@ -105,7 +107,7 @@
                 Grid.Row="1" Grid.Column="2"
                 Style="{StaticResource AcceptButton}" Template="{StaticResource CircularButton}"
                 Click="AddTag"
-                Width="27" Height="25" Margin="3 0 0 0">
+                Padding="8 5" Margin="3 0 0 0">
                 <icons:Material Kind="Plus" Width="15" Height="15"/>
             </Button>
 
@@ -125,13 +127,13 @@
                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                 <Button
                     Style="{StaticResource AcceptButton}" Template="{StaticResource SquareButton}"
-                    Padding="5" Margin="0 0 5 0"
+                    Padding="8" Margin="5 0"
                     Click="Save">
                     <icons:Material Kind="ContentSave"/>
                 </Button>
                 <Button x:Name="DeleteCollectionButton"
                         Style="{StaticResource RejectButton}" Template="{StaticResource SquareButton}"
-                        Padding="5" Margin="5 0 0 0"
+                        Padding="8" Margin="5 0"
                         Click="Delete">
                     <icons:Material Kind="TrashCan"/>
                 </Button>
