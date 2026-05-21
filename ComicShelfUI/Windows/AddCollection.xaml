@@ -115,6 +115,7 @@
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 Foreground="{StaticResource FontColor}" FontSize="15" Background="#0AFFFFFF" BorderBrush="DarkGray"
                 Margin="10 10 0 10"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionChanged="DeleteTag">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
