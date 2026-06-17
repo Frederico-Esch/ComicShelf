@@ -9,6 +9,7 @@
              mc:Ignorable="d" 
              Loaded="CollectionVCard_Loaded"
              d:DataContext="{x:Type domain:Collection}"
+             SizeChanged="Resized"
              x:Name="CurrentWindow">
     <UserControl.Resources>
         <BitmapImage x:Key="GenericCover" UriSource="..\Resources\GenericComicBookCover.jpg"></BitmapImage>
@@ -41,7 +42,7 @@
             Margin="5" d:MaxWidth="150px" MaxWidth="{Binding MaxWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
             <Image x:Name="Cover" Source="{StaticResource GenericCover}">
                 <Image.RenderTransform>
-                    <ScaleTransform x:Name="Scale" CenterX="50" CenterY="50" ScaleX="1" ScaleY="1"/>
+                    <ScaleTransform x:Name="Scale" CenterX="75" CenterY="75" ScaleX="1" ScaleY="1"/>
                 </Image.RenderTransform>
             </Image>
             <TextBlock TextWrapping="Wrap" d:Text="EXAMPLE NAME WITH MULTIPLE LINES" Text="{Binding Name}" Margin="0 5" FontSize="{Binding FontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CollectionVCard}}"/>

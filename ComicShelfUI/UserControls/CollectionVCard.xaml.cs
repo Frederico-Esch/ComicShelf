@@ -83,5 +83,11 @@ namespace ComicShelfUI.UserControls
         }
 
         private void CancelAnimation(object sender, System.Windows.Input.MouseEventArgs e) => e.Handled = !HasAnimation;
+
+        private void Resized(object sender, SizeChangedEventArgs e)
+        {
+            Scale.CenterX = Cover.ActualWidth / 2;
+            Scale.CenterY = Cover.ActualHeight / 2;
+        }
     }
 }
